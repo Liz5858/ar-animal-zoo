@@ -1,140 +1,36 @@
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>우리 교실 AR 동물원</title>
-<style>
-:root{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#213044;background:#f3f6fb}
-*{box-sizing:border-box}body{margin:0}.shell{max-width:1260px;margin:auto;padding:22px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-h1{font-size:clamp(23px,3vw,34px);margin:0}header p{margin:6px 0;color:#65748a}
-button{font:inherit;cursor:pointer;border:1px solid #dbe2ee;background:white;border-radius:13px;padding:10px 14px;color:#26364d}
-button:hover{border-color:#7289d5}button:focus-visible{outline:3px solid #8aaaff}
-button.primary{background:#526ce4;color:white;border:0;font-weight:700}
-button.selected{background:#e7edff;border-color:#5973df;color:#334fca;font-weight:750}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px}
-.stage{position:relative;aspect-ratio:16/10;min-height:350px;background:#192334;border-radius:22px;overflow:hidden;isolation:isolate}
-#camera,#scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#camera{transform:scaleX(-1);background:linear-gradient(130deg,#b9d7e9,#c7e5db)}
-#scene{touch-action:none;cursor:crosshair}
-.hint{position:absolute;top:15px;left:15px;right:15px;pointer-events:none;color:white;text-shadow:0 2px 8px #0009;font-weight:700}
-.status{position:absolute;bottom:14px;left:14px;background:#111b2bc7;color:white;border-radius:30px;padding:8px 13px;font-size:13px;pointer-events:none}
-.panel{background:white;border:1px solid #e3e9f2;border-radius:20px;padding:18px;box-shadow:0 5px 24px #2534520b}
-.panel h2{font-size:17px;margin:0 0 12px}.animals{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-.animal{min-height:72px;font-size:15px}.animal span{display:block;font-size:29px;margin-bottom:3px}
-.group{margin-bottom:23px}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.range{width:100%;accent-color:#526ce4}.help{font-size:13px;line-height:1.65;color:#64748b}
-.footer{margin-top:15px;display:flex;gap:9px;flex-wrap:wrap}.footer button{flex:1}
-#empty{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;color:white;text-align:center;background:#192334ad;padding:30px}
-#empty.hidden{display:none}#empty strong{font-size:24px}
-@media(max-width:850px){.layout{grid-template-columns:1fr}.animals{grid-template-columns:repeat(4,1fr)}.stage{min-height:300px}}
-@media(max-width:500px){.shell{padding:10px}.animals{grid-template-columns:repeat(2,1fr)}.stage{min-height:270px}}
-</style>
-</head>
-<body>
-<div class="shell">
-<header><div><h1>🦕 우리 교실 AR 동물원</h1><p>카메라 화면을 클릭해서 동물을 소환해 보세요!</p></div><button class="primary" id="cameraBtn">📷 카메라 켜기</button></header>
-<div class="layout">
-<section>
-<div class="stage" id="stage">
-<video id="camera" autoplay playsinline muted></video>
-<canvas id="scene" aria-label="동물을 배치하는 화면"></canvas>
-<div class="hint">✨ 원하는 위치를 클릭해 보세요</div>
-<div class="status" id="status">카메라를 켜거나 연습 화면에서 시작하세요</div>
-<div id="empty"><div><strong>🦖 동물을 소환해 볼까요?</strong><p>카메라를 켜거나, 바로 화면을 클릭해 연습해 보세요.</p></div></div>
-</div>
-<div class="footer"><button id="removeBtn">↩ 선택 동물 삭제</button><button id="clearBtn">🧹 모두 지우기</button><button id="shotBtn">📸 사진 저장</button></div>
-</section>
-<aside class="panel">
-<div class="group"><h2>1. 동물 고르기</h2><div class="animals">
-<button class="animal selected" data-kind="dino"><span>🦖</span>공룡</button>
-<button class="animal" data-kind="rabbit"><span>🐰</span>토끼</button>
-<button class="animal" data-kind="cat"><span>🐱</span>고양이</button>
-<button class="animal" data-kind="lion"><span>🦁</span>사자</button>
-</div></div>
-<div class="group"><h2>2. 동물 움직이기</h2><div class="buttons">
-<button id="jumpBtn">⬆ 점프!</button><button id="rotateBtn">↻ 회전</button>
-<button id="leftBtn">◀ 왼쪽</button><button id="rightBtn">오른쪽 ▶</button>
-</div></div>
-<div class="group"><h2>3. 크기 바꾸기</h2><input class="range" id="size" type="range" min="40" max="220" value="100" aria-label="선택 동물 크기"><div class="help">작게 ↔ 크게 · <span id="sizeValue">100%</span></div></div>
-<div class="help">💡 화면의 빈 곳을 클릭하면 새 동물이 나타나요. 동물을 클릭하거나 드래그하면 선택·이동할 수 있어요.<br><br>카메라를 켜지 않아도 연습 화면에서 체험할 수 있습니다.</div>
-</aside>
-</div>
-</div>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>우리 교실 공룡 연구소</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f1f4ef;color:#193c32;font-family:system-ui,sans-serif}main{max-width:1320px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}h1{font-size:30px;margin:6px 0}p{line-height:1.7;color:#597267}small{letter-spacing:2px;font-weight:700}button{cursor:pointer;border:1px solid #ccd9ce;background:#fff;color:#234b3b;border-radius:12px;padding:12px 16px;font:inherit}button:hover{background:#e8f3df}button:disabled{opacity:.5;cursor:wait}.primary{background:#24573e;color:white}.layout{display:grid;grid-template-columns:1fr 280px;gap:20px}.stage{position:relative;aspect-ratio:16/10;min-height:360px;border-radius:22px;overflow:hidden;background:radial-gradient(ellipse at 50% 25%,#e8f2cf,#bed5aa 65%,#92ad89)}video,canvas{position:absolute;width:100%;height:100%;inset:0;object-fit:cover}video{transform:scaleX(-1)}canvas{touch-action:none}.badge,#status{position:absolute;pointer-events:none;left:18px;padding:10px 14px;border-radius:12px;background:#ffffffdf;max-width:calc(100% - 36px)}.badge{top:18px;font-size:13px}#status{bottom:18px;font-size:14px}.panel{background:white;padding:22px;border-radius:22px}h2{font-size:19px;margin:0 0 10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0 24px}label{display:block;font-size:14px;margin-top:18px}input{width:100%;accent-color:#377c47}.help{font-size:13px}.footer{display:flex;gap:10px;margin-top:12px}.error{background:#fff2d6!important;color:#6d4216!important}a{color:#377648}#loading{position:absolute;inset:0;display:grid;place-items:center;background:#dce8dbe8;text-align:center;padding:30px;pointer-events:none}#loading[hidden]{display:none}@media(max-width:850px){.layout{grid-template-columns:1fr}.stage{min-height:300px}header{align-items:flex-start}h1{font-size:24px}main{padding:14px}}
+</style><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script></head><body><main><header><div><small>CLASSROOM · DINOSAUR LAB</small><h1>🦖 우리 교실 공룡 연구소</h1><p style="margin:0">티라노사우루스 한 마리와 천천히 만나 보세요.</p></div><button id="cameraBtn" class="primary">카메라 켜기</button></header><div class="layout"><section><div class="stage" id="stage"><video id="video" autoplay muted playsinline></video><canvas id="scene" aria-label="3D 공룡 관찰 화면"></canvas><div class="badge">티라노사우루스 · 입체 관찰</div><div id="status" role="status">공룡을 불러오는 중…</div><div id="loading">공룡이 오는 중입니다…</div></div><div class="footer"><button id="reset">처음 위치로</button><button id="photo">사진 저장</button></div></section><aside class="panel"><h2>살아 움직이는 공룡</h2><p class="help">빈 곳을 클릭하면 그곳까지 걸어가요.<br>공룡을 클릭하면 몸을 움직이며 반응해요.</p><div class="grid"><button id="idle">쉬기</button><button id="walk">산책하기</button><button id="react">반응 보기</button><button id="turn">반대쪽 보기</button></div><label for="angle">관찰 방향 <span id="angleValue">35°</span></label><input id="angle" type="range" min="-180" max="180" value="35"><label for="size">공룡 크기 <span id="sizeValue">100%</span></label><input id="size" type="range" min="50" max="170" value="100"><label for="speed">걸음 속도</label><input id="speed" type="range" min="50" max="150" value="85"><p class="help">마우스 휠로 크기를 바꿀 수 있어요.<br>카메라 없이도 관찰할 수 있습니다.</p><hr style="border:0;border-top:1px solid #e3eadf;margin:24px 0"><p class="help">카메라를 고정하고 사용하세요. 화면에서 지정한 위치에 합성하며, 실제 책상 표면을 자동으로 인식하지 않습니다.</p><p class="help">3D 모델: <a href="https://gobkit.com/freebies" target="_blank" rel="noopener">Gobkit · CC0</a></p></aside></div></main>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-const stage=document.getElementById('stage'),canvas=document.getElementById('scene'),video=document.getElementById('camera');
-const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,preserveDrawingBuffer:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;
-const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-8,8,5,-5,.1,100);camera.position.set(0,0,25);camera.lookAt(0,0,0);
-scene.add(new THREE.HemisphereLight(0xffffff,0x75829a,2.3));
-const light=new THREE.DirectionalLight(0xffffff,2.1);light.position.set(-4,8,12);scene.add(light);
-const items=[];let selected=null,kind='dino',stream=null,dragging=false,dragMoved=false,pointerStart=null;
-const mat=(c)=>new THREE.MeshStandardMaterial({color:c,roughness:.78});
-function ball(parent,x,y,z,sx,sy,sz,color){let o=new THREE.Mesh(new THREE.SphereGeometry(1,20,14),mat(color));o.position.set(x,y,z);o.scale.set(sx,sy,sz);parent.add(o);return o}
-function cone(parent,x,y,z,r,h,color,rot=0){let o=new THREE.Mesh(new THREE.ConeGeometry(r,h,16),mat(color));o.position.set(x,y,z);o.rotation.z=rot;parent.add(o);return o}
-function animal(type){
- const root=new THREE.Group(),body=new THREE.Group();root.add(body);
- const palette={dino:'#66c77b',rabbit:'#f2e6dd',cat:'#e5a45d',lion:'#d4a35c'};
- const c=palette[type];
- ball(body,0,.75,0,.73,.77,.52,c);ball(body,0,1.75,.06,.62,.61,.56,c);
- for(let x of [-.43,.43]){ball(body,x,.18,.14,.23,.35,.25,c);ball(body,x,1.84,.57,.095,.13,.07,'#252d40')}
- ball(body,0,1.55,.62,.17,.13,.10,type==='dino'?'#418f58':'#ad7778');
- if(type==='dino'){
- for(let i=0;i<4;i++)cone(body,0,1.38-i*.34,-.45,.22,.43,'#3b9a62');
- let tail=cone(body,0,.45,-.65,.42,1.25,c);tail.rotation.x=-Math.PI/2.7;
- for(let x of [-.65,.65])ball(body,x,.9,.25,.22,.26,.25,c);
- }else if(type==='rabbit'){
- for(let x of [-.35,.35]){ball(body,x,2.57,0,.22,.78,.19,c);ball(body,x,2.61,.17,.11,.55,.08,'#e6b1b6')}
- ball(body,0,.42,-.57,.23,.23,.23,'#ffffff');
- }else if(type==='cat'){
- for(let x of [-.45,.45])cone(body,x,2.34,0,.31,.57,c);
- const tail=ball(body,.83,.63,-.28,.18,.6,.18,c);tail.rotation.z=-.65;
- for(let x of [-1,1]){let whisk=ball(body,x*.35,1.52,.6,.28,.018,.018,'#eee');whisk.rotation.z=x*.16}
- }else{
- ball(body,0,1.67,-.14,.83,.82,.46,'#a96b32');ball(body,0,1.78,.29,.60,.59,.43,c);
- for(let x of [-.36,.36])ball(body,x,2.23,.10,.22,.22,.20,'#a96b32');
- ball(body,.84,.55,-.28,.18,.56,.17,c);
- }
- const shadow=new THREE.Mesh(new THREE.CircleGeometry(.87,32),new THREE.MeshBasicMaterial({color:0x172331,transparent:true,opacity:.25,depthWrite:false}));
- shadow.rotation.x=0;shadow.scale.y=.30;shadow.position.y=-.18;root.add(shadow);
- body.position.y=-.75;root.userData={body,shadow,baseY:0,jumpAt:0,turnAt:0,turnFrom:0};
- return root;
-}
-function fit(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);let aspect=w/h;camera.left=-5*aspect;camera.right=5*aspect;camera.top=5;camera.bottom=-5;camera.updateProjectionMatrix()}
-new ResizeObserver(fit).observe(stage);fit();
-function coords(e){let r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*2-1,y:-((e.clientY-r.top)/r.height*2-1)}}
-function world(e){const p=coords(e);return new THREE.Vector3(p.x*(camera.right-camera.left)/2,p.y*5,0)}
-function hit(e){const p=world(e);for(let i=items.length-1;i>=0;i--){let o=items[i];let dx=p.x-o.position.x,dy=p.y-o.position.y;let s=o.scale.x;if(Math.abs(dx)<.85*s&&dy>-.6*s&&dy<2.2*s)return o}return null}
-function choose(o){selected=o;document.getElementById('size').value=Math.round((o?.scale.x||1)*100);document.getElementById('sizeValue').textContent=document.getElementById('size').value+'%';status(o?'동물 선택됨 · 드래그해서 움직여 보세요':'빈 곳을 클릭해 동물을 소환하세요')}
-function status(s){document.getElementById('status').textContent=s}
-function spawn(e){const p=world(e),o=animal(kind);o.position.set(p.x,p.y,0);scene.add(o);items.push(o);choose(o);document.getElementById('empty').classList.add('hidden')}
-canvas.addEventListener('pointerdown',e=>{pointerStart={x:e.clientX,y:e.clientY};dragMoved=false;const o=hit(e);if(o){choose(o);dragging=true;canvas.setPointerCapture(e.pointerId)}else{spawn(e)}});
-canvas.addEventListener('pointermove',e=>{if(!dragging||!selected)return;const p=world(e);selected.position.x=p.x;selected.position.y=p.y;if(pointerStart&&Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y)>5)dragMoved=true});
-canvas.addEventListener('pointerup',()=>dragging=false);
-document.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{kind=b.dataset.kind;document.querySelectorAll('[data-kind]').forEach(x=>x.classList.toggle('selected',x===b));status(b.textContent.trim()+' 선택 · 화면을 클릭하세요')});
-document.getElementById('jumpBtn').onclick=()=>{if(selected)selected.userData.jumpAt=performance.now();else status('먼저 동물을 소환하세요')};
-document.getElementById('rotateBtn').onclick=()=>{if(selected){selected.userData.turnAt=performance.now();selected.userData.turnFrom=selected.userData.body.rotation.y}else status('먼저 동물을 소환하세요')};
-document.getElementById('leftBtn').onclick=()=>{if(selected)selected.rotation.y-=.35};
-document.getElementById('rightBtn').onclick=()=>{if(selected)selected.rotation.y+=.35};
-document.getElementById('size').oninput=e=>{document.getElementById('sizeValue').textContent=e.target.value+'%';if(selected)selected.scale.setScalar(+e.target.value/100)};
-function remove(o){if(!o)return;scene.remove(o);items.splice(items.indexOf(o),1);choose(items.at(-1)||null)}
-document.getElementById('removeBtn').onclick=()=>remove(selected);
-document.getElementById('clearBtn').onclick=()=>{for(const o of [...items])remove(o);status('모두 지웠어요. 새 동물을 소환해 보세요')};
-document.getElementById('cameraBtn').onclick=async()=>{
- if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;document.getElementById('cameraBtn').textContent='📷 카메라 켜기';status('연습 화면 모드');return}
- try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280}},audio:false});video.srcObject=stream;await video.play();document.getElementById('cameraBtn').textContent='⏹ 카메라 끄기';document.getElementById('empty').classList.add('hidden');status('카메라 연결 완료 · 원하는 곳을 클릭하세요')}
- catch(err){status('카메라를 사용할 수 없어요. HTTPS·권한을 확인하세요.');alert('카메라를 열지 못했어요. HTTPS 주소에서 실행하고 카메라 권한을 허용해 주세요.')}
-};
-document.getElementById('shotBtn').onclick=()=>{
- const out=document.createElement('canvas');out.width=stage.clientWidth*2;out.height=stage.clientHeight*2;
- const ctx=out.getContext('2d');ctx.fillStyle='#c8d8e9';ctx.fillRect(0,0,out.width,out.height);
- if(stream&&video.videoWidth){ctx.save();ctx.translate(out.width,0);ctx.scale(-1,1);let vw=video.videoWidth,vh=video.videoHeight,scale=Math.max(out.width/vw,out.height/vh);ctx.drawImage(video,(out.width-vw*scale)/2,(out.height-vh*scale)/2,vw*scale,vh*scale);ctx.restore()}
- ctx.drawImage(canvas,0,0,out.width,out.height);const a=document.createElement('a');a.download='우리교실-AR동물원.png';a.href=out.toDataURL('image/png');a.click();status('사진을 저장했어요!')
-};
-function animate(t){requestAnimationFrame(animate);for(let o of items){const d=o.userData;let elapsed=(t-d.jumpAt)/850;if(d.jumpAt&&elapsed>=0&&elapsed<1){d.body.position.y=-.75+Math.sin(elapsed*Math.PI)*1.15}else d.body.position.y=-.75;
- let r=(t-d.turnAt)/950;if(d.turnAt&&r>=0&&r<1)d.body.rotation.y=d.turnFrom+Math.PI*2*r;else if(d.turnAt&&r>=1){d.body.rotation.y=d.turnFrom;d.turnAt=0}
- }renderer.render(scene,camera)}
-requestAnimationFrame(animate);
-</script>
-</body></html>
+import * as T from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+const $=id=>document.getElementById(id),stage=$('stage'),canvas=$('scene'),video=$('video');
+const status=s=>$('status').textContent=s;
+let renderer,scene,camera,model,mixer,actions={},active,stream,target=null,walkMode=false,reactUntil=0,ready=false,heading=.61,scale=1;
+const root=new T.Group(),visual=new T.Group();root.add(visual);root.position.set(0,-1.8,0);
+function failure(message){$('loading').hidden=false;$('loading').textContent=message;$('loading').className='error';status(message)}
+async function init(){try{
+ renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
+ scene=new T.Scene();camera=new T.OrthographicCamera(-8,8,5,-5,.1,100);camera.position.set(0,3,18);camera.lookAt(0,0,0);scene.add(new T.HemisphereLight(0xf8ffe9,0x5b6d55,2.5));const sun=new T.DirectionalLight(0xfff2d8,3);sun.position.set(-4,7,6);scene.add(sun);const rim=new T.DirectionalLight(0xffffff,1.4);rim.position.set(5,3,-4);scene.add(rim);scene.add(root);
+ const shadowCanvas=document.createElement('canvas');shadowCanvas.width=128;shadowCanvas.height=128;const ctx=shadowCanvas.getContext('2d'),gradient=ctx.createRadialGradient(64,64,0,64,64,64);gradient.addColorStop(0,'rgba(21,45,25,.4)');gradient.addColorStop(1,'rgba(21,45,25,0)');ctx.fillStyle=gradient;ctx.fillRect(0,0,128,128);const shadow=new T.Mesh(new T.PlaneGeometry(4,2),new T.MeshBasicMaterial({map:new T.CanvasTexture(shadowCanvas),transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.015;root.add(shadow);
+ new ResizeObserver(fit).observe(stage);fit();
+ const gltf=await new GLTFLoader().loadAsync('./trex.gltf');model=gltf.scene;const box=new T.Box3().setFromObject(model),s=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());const norm=3.1/s.y;model.scale.setScalar(norm);model.position.set(-center.x*norm,-box.min.y*norm,-center.z*norm);visual.add(model);visual.rotation.y=heading;
+ mixer=new T.AnimationMixer(model);for(const clip of gltf.animations)actions[clip.name.toLowerCase()]=mixer.clipAction(clip);if(!actions.idle||!actions.walk)throw Error('애니메이션 누락');ready=true;$('loading').hidden=true;play('idle');status('화면의 빈 곳을 클릭하면 공룡이 걸어가요');renderer.setAnimationLoop(frame);
+}catch(e){failure(renderer?'공룡 파일을 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.':'3D 그래픽을 시작하지 못했어요. Chrome·Edge의 그래픽 가속 설정을 확인해 주세요.');console.error(e)}}
+function fit(){if(!renderer)return;const w=stage.clientWidth,h=stage.clientHeight,a=w/h;renderer.setSize(w,h,false);camera.left=-5*a;camera.right=5*a;camera.updateProjectionMatrix()}
+function play(name){const next=actions[name];if(!next||next===active)return;next.reset().setEffectiveWeight(1).play();if(active)active.crossFadeTo(next,.25,false);active=next}
+function stop(){target=null;walkMode=false;reactUntil=0;if(ready)play('idle')}
+function react(){if(!ready)return;stop();play('attack');reactUntil=performance.now()+actions.attack.getClip().duration*1000;status('공룡이 반응하고 있어요')}
+const ray=new T.Raycaster(),plane=new T.Plane(new T.Vector3(0,0,1),0),point=new T.Vector3();
+function go(e){if(!ready)return;const rect=canvas.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-rect.left)/rect.width*2-1,1-(e.clientY-rect.top)/rect.height*2),camera);if(ray.intersectObject(model,true).length){react();return}if(ray.ray.intersectPlane(plane,point)){walkMode=false;reactUntil=0;target=point.clone();target.x=T.MathUtils.clamp(target.x,camera.left+1,camera.right-1);target.y=T.MathUtils.clamp(target.y,-3.6,2.5);play('walk');status('지정한 곳으로 걷는 중…')}}
+canvas.addEventListener('pointerdown',go);canvas.addEventListener('wheel',e=>{e.preventDefault();$('size').value=T.MathUtils.clamp(+$('size').value-Math.sign(e.deltaY)*5,50,170);$('size').dispatchEvent(new Event('input'))},{passive:false});
+$('idle').onclick=()=>{stop();status('쉬면서 몸과 꼬리를 움직여요')};$('react').onclick=react;
+$('walk').onclick=()=>{if(!ready)return;walkMode=true;reactUntil=0;target=new T.Vector3(root.position.x>0?camera.left+2:camera.right-2,root.position.y,0);play('walk');status('공룡이 산책하고 있어요. 쉬기를 누르면 멈춰요')};
+$('turn').onclick=()=>{stop();heading+=Math.PI;visual.rotation.y=heading;syncAngle()};
+function syncAngle(){const a=Math.round(T.MathUtils.radToDeg(Math.atan2(Math.sin(heading),Math.cos(heading))));$('angle').value=a;$('angleValue').textContent=a+'°'}
+$('angle').oninput=e=>{stop();heading=T.MathUtils.degToRad(+e.target.value);visual.rotation.y=heading;syncAngle()};$('size').oninput=e=>{scale=+e.target.value/100;root.scale.setScalar(scale);$('sizeValue').textContent=e.target.value+'%'};
+$('reset').onclick=()=>{stop();root.position.set(0,-1.8,0);heading=.61;visual.rotation.y=heading;$('size').value=100;$('size').dispatchEvent(new Event('input'));syncAngle();status('처음 위치로 돌아왔어요')};
+let previous=0;function frame(now){const dt=Math.min((now-previous)/1000||0,.05);previous=now;if(mixer){if(active===actions.walk)active.timeScale=+$('speed').value/100;mixer.update(dt)}if(target){const delta=target.clone().sub(root.position),distance=delta.length(),speed=1.4*(+$('speed').value/100)*scale;if(distance<.07){root.position.copy(target);if(walkMode){target.x=target.x>0?camera.left+2:camera.right-2}else{target=null;play('idle');status('도착했어요. 다른 곳을 클릭해 보세요')}}else{root.position.addScaledVector(delta.normalize(),Math.min(speed*dt,distance));const desired=Math.atan2(delta.x,delta.y*.22+.05);heading+=Math.atan2(Math.sin(desired-heading),Math.cos(desired-heading))*Math.min(dt*5,1);visual.rotation.y=heading;syncAngle()}}if(reactUntil&&now>reactUntil){reactUntil=0;play('idle');status('다시 주변을 살펴봐요')}renderer.render(scene,camera)}
+$('cameraBtn').onclick=async()=>{if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;$('cameraBtn').textContent='카메라 켜기';status('연습 배경으로 돌아왔어요');return}try{stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},facingMode:'user'},audio:false});video.srcObject=stream;await video.play();$('cameraBtn').textContent='카메라 끄기';status('카메라 연결 완료 · 공룡을 놓을 곳을 클릭하세요')}catch(e){if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;status('카메라 권한 또는 연결을 확인해 주세요. 연습 배경으로 이용할 수 있어요')}};
+$('photo').onclick=()=>{if(!ready)return;renderer.render(scene,camera);const out=document.createElement('canvas');out.width=canvas.width;out.height=canvas.height;const c=out.getContext('2d');c.fillStyle='#bed5aa';c.fillRect(0,0,out.width,out.height);if(stream&&video.videoWidth){const s=Math.max(out.width/video.videoWidth,out.height/video.videoHeight);c.save();c.translate(out.width,0);c.scale(-1,1);c.drawImage(video,(out.width-video.videoWidth*s)/2,(out.height-video.videoHeight*s)/2,video.videoWidth*s,video.videoHeight*s);c.restore()}c.drawImage(canvas,0,0);const a=document.createElement('a');a.download='우리교실-티라노사우루스.png';a.href=out.toDataURL();a.click()};window.addEventListener('pagehide',()=>stream?.getTracks().forEach(t=>t.stop()));init();
+</script></body></html>
