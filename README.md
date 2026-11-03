@@ -17,3 +17,9 @@
 Gobkit T-rex (https://gobkit.com/freebies/dino/Trex.glb), CC0 1.0, https://gobkit.com/freebies . 스타일화된 게임용 3D 모델이며 실사 스캔 모델이 아닙니다. 원본 GLB의 기하·재질·뼈대·애니메이션을 유지한 채 단일 glTF 파일로 변환해 함께 제공합니다. idle/walk/attack 클립 사용. dead 클립은 수업 UI에서 사용하지 않습니다.
 
 Three.js 0.160.1 및 GLTFLoader를 jsDelivr에서 불러옵니다. 인터넷 연결과 WebGL 지원이 필요합니다.
+
+## 익룡 모드
+
+익룡 선택 → 제자리 날갯짓. 빈 곳 클릭 → 해당 위치로 비행. 날아다니기 → 좌우 왕복. 제자리 비행 → 이동 중지. 티라노 버튼으로 돌아갈 수 있습니다. 전체 화면·사진 저장 지원.
+
+Pterodactylus 모델: https://gobkit.com/freebies/dino/Pterodactylus.glb (Gobkit, CC0 1.0). 원본의 뼈대 동작에 정점 기반 날갯짓·상하 움직임을 추가했습니다. 피부는 절차적 갈색 얼룩·막의 결을 표현한 재질이며 실제 익룡 피부 색·질감의 과학적 재현은 아닙니다. 익룡은 공룡과 다른 날아다니는 파충류입니다.
