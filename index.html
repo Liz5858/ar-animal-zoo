@@ -9,12 +9,56 @@ const status=s=>$('status').textContent=s;
 let renderer,scene,camera,model,mixer,actions={},active,stream,target=null,walkMode=false,reactUntil=0,ready=false,heading=.61,scale=1;
 const root=new T.Group(),visual=new T.Group();root.add(visual);root.position.set(0,-1.8,0);
 function failure(message){$('loading').hidden=false;$('loading').textContent=message;$('loading').className='error';status(message)}
+
+/* Object-space skin detail follows the rig without stretching the original palette atlas. */
+function applyDinosaurSkin(mesh){
+ const g=mesh.geometry;g.computeBoundingBox();const bounds=g.boundingBox,extent=bounds.getSize(new T.Vector3());
+ const originals=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+ const mats=originals.map(original=>{
+ const mat=original.clone();mat.roughness=.88;mat.metalness=0;
+ mat.onBeforeCompile=shader=>{
+ shader.uniforms.skinMin={value:bounds.min.clone()};shader.uniforms.skinExtent={value:extent.clone()};
+ shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform vec3 skinMin;uniform vec3 skinExtent;varying vec3 vSkinCoord;')
+ .replace('#include <begin_vertex>','#include <begin_vertex>\nvSkinCoord=(position-skinMin)/max(skinExtent,vec3(0.000001));');
+ shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>
+ varying vec3 vSkinCoord;
+ float skinHash(vec3 p){p=fract(p*.3183099+vec3(.13,.27,.43));p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+ float skinNoise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(skinHash(i),skinHash(i+vec3(1,0,0)),f.x),mix(skinHash(i+vec3(0,1,0)),skinHash(i+vec3(1,1,0)),f.x),f.y),mix(mix(skinHash(i+vec3(0,0,1)),skinHash(i+vec3(1,0,1)),f.x),mix(skinHash(i+vec3(0,1,1)),skinHash(i+vec3(1,1,1)),f.x),f.y),f.z);}
+ float skinFbm(vec3 p){return .57*skinNoise(p)+.28*skinNoise(p*2.07)+.15*skinNoise(p*4.13);}
+ float skinCells(vec2 p){vec2 cell=floor(p),f=fract(p);float d=1.;for(int x=-1;x<=1;x++){for(int y=-1;y<=1;y++){vec2 o=vec2(float(x),float(y));vec2 jitter=vec2(skinHash(vec3(cell+o,2.)),skinHash(vec3(cell+o,7.)));d=min(d,length(o+.25+.5*jitter-f));}}return d;}
+ vec3 skinRelief(vec3 n,vec3 pos,float h){vec3 sx=dFdx(pos),sy=dFdy(pos),r1=cross(sy,n),r2=cross(n,sx);float det=dot(sx,r1);vec3 grad=sign(det)*(dFdx(h)*r1+dFdy(h)*r2);return normalize(abs(det)*n-grad);}
+ `);
+ shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
+ vec3 sp=vSkinCoord*vec3(1.2,3.8,1.7);
+ float mottles=skinFbm(sp*5.);
+ float stripe=sin(sp.y*18.+skinFbm(sp*3.)*7.+sp.z*2.);
+ float bands=smoothstep(.15,.75,stripe)*smoothstep(.22,.6,vSkinCoord.z);
+ float belly=1.-smoothstep(.12,.48,vSkinCoord.z+skinNoise(sp*8.)*.12);
+ float originalLuma=dot(diffuseColor.rgb,vec3(.2126,.7152,.0722));
+ float skinMask=smoothstep(.018,.07,originalLuma)*(1.-smoothstep(.72,.95,originalLuma));
+ vec3 skinColor=mix(vec3(.065,.083,.039),vec3(.23,.25,.105),mottles);
+ skinColor=mix(skinColor,vec3(.028,.042,.023),bands*.68);
+ skinColor=mix(skinColor,vec3(.29,.265,.15),belly*.7);
+ float scales=skinCells(sp.yz*65.+vec2(skinNoise(sp*7.)*.5));
+ float scaleRidge=smoothstep(.27,.48,scales);
+ float pores=skinNoise(sp*260.);
+ skinColor*=.83+.2*pores+.14*(1.-scaleRidge);
+ diffuseColor.rgb=mix(diffuseColor.rgb,skinColor,skinMask);
+ `);
+ shader.fragmentShader=shader.fragmentShader.replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
+ float skinHeight=((1.-scaleRidge)*.009+pores*.002+sin(sp.y*155.+mottles*9.)*.001)*skinMask;
+ normal=skinRelief(normal,-vViewPosition,skinHeight);
+ `);
+ };mat.customProgramCacheKey=()=> 'dinosaur-organic-skin-v1';return mat;
+ });mesh.material=Array.isArray(mesh.material)?mats:mats[0];
+}
+
 async function init(){try{
  renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
  scene=new T.Scene();camera=new T.OrthographicCamera(-8,8,5,-5,.1,100);camera.position.set(0,3,18);camera.lookAt(0,0,0);scene.add(new T.HemisphereLight(0xf8ffe9,0x5b6d55,2.5));const sun=new T.DirectionalLight(0xfff2d8,3);sun.position.set(-4,7,6);scene.add(sun);const rim=new T.DirectionalLight(0xffffff,1.4);rim.position.set(5,3,-4);scene.add(rim);scene.add(root);
  const shadowCanvas=document.createElement('canvas');shadowCanvas.width=128;shadowCanvas.height=128;const ctx=shadowCanvas.getContext('2d'),gradient=ctx.createRadialGradient(64,64,0,64,64,64);gradient.addColorStop(0,'rgba(21,45,25,.4)');gradient.addColorStop(1,'rgba(21,45,25,0)');ctx.fillStyle=gradient;ctx.fillRect(0,0,128,128);const shadow=new T.Mesh(new T.PlaneGeometry(4,2),new T.MeshBasicMaterial({map:new T.CanvasTexture(shadowCanvas),transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.015;root.add(shadow);
  new ResizeObserver(fit).observe(stage);fit();
- const gltf=await new GLTFLoader().loadAsync('./trex.gltf');model=gltf.scene;model.updateMatrixWorld(true);model.traverse(o=>{if(o.isSkinnedMesh){o.skeleton.update();o.computeBoundingBox();o.computeBoundingSphere();o.frustumCulled=false;}});const box=new T.Box3().setFromObject(model,true),s=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());const norm=3.1/s.y;model.scale.setScalar(norm);model.position.set(-center.x*norm,-box.min.y*norm,-center.z*norm);visual.add(model);visual.rotation.y=heading;
+ const gltf=await new GLTFLoader().loadAsync('./trex.gltf');model=gltf.scene;model.updateMatrixWorld(true);model.traverse(o=>{if(o.isMesh)applyDinosaurSkin(o);if(o.isSkinnedMesh){o.skeleton.update();o.computeBoundingBox();o.computeBoundingSphere();o.frustumCulled=false;}});const box=new T.Box3().setFromObject(model,true),s=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());const norm=3.1/s.y;model.scale.setScalar(norm);model.position.set(-center.x*norm,-box.min.y*norm,-center.z*norm);visual.add(model);visual.rotation.y=heading;
  mixer=new T.AnimationMixer(model);for(const clip of gltf.animations)actions[clip.name.toLowerCase()]=mixer.clipAction(clip);if(!actions.idle||!actions.walk)throw Error('애니메이션 누락');ready=true;$('loading').hidden=true;play('idle');status('화면의 빈 곳을 클릭하면 공룡이 걸어가요');renderer.setAnimationLoop(frame);
 }catch(e){failure(renderer?'공룡 파일을 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.':'3D 그래픽을 시작하지 못했어요. Chrome·Edge의 그래픽 가속 설정을 확인해 주세요.');console.error(e)}}
 function fit(){if(!renderer)return;const w=stage.clientWidth,h=stage.clientHeight,a=w/h;renderer.setSize(w,h,false);camera.left=-5*a;camera.right=5*a;camera.updateProjectionMatrix()}
